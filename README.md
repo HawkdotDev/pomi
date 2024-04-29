@@ -23,13 +23,13 @@ Pomo is a CLI tool that allows you to start a Pomodoro timer web app using a com
 
 ## Usage
 
-To start the Pomodoro timer web app, run the following command:
+- To start the Pomodoro timer web app, run the following command:
    
    ```bash
-   pomo start
+      pomo start
    ```
 
-Replace `pomo` with the appropriate path if needed.
+- Replace `pomo` with the appropriate path if needed.
 
 <!--  
 ## Configuration
