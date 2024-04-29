@@ -1,58 +1,53 @@
-# pomo
-simple pomodoro timer
-# CLI Tool for Pomo Timer Web App
+# Pomo (cli tool)
 
-This CLI tool allows you to open a web app with a Pomodoro timer using a command-line interface. It interacts with an Express.js backend and utilizes a frontend framework (React, Vue.js, or Angular) for the UI.
+Pomo is a CLI tool that allows you to start a Pomodoro timer web app using a command-line interface. It interacts with an Express.js backend and utilizes a frontend framework (React, Vue.js, or Angular) for the UI.
 
 ## Features
 
-- **Open Web App**: Open the Pomodoro timer web app in the default browser.
-- **Integration with Express.js Backend**: Communicate with an Express.js server to handle backend logic and serve frontend assets.
-- **Frontend Framework Support**: Choose from React, Vue.js, or Angular for the frontend framework.
+- **Start Pomodoro Timer**: Start the Pomodoro timer web app in the default browser with a single command.
+- **Frontend Framework Support**: Choose from React, Vue.js, or Angular for the frontend framework is you want to create your custom UI.
 
 ## Installation
 
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/pomo-cli.git
+   git clone https://github.com/HawkdotDev/pomo.git
+   ```
 
-    Install dependencies:
+2. Install dependencies:
 
-    bash
+   ```bash
+   cd pomo && npm install
+   ```
 
-    cd pomo-cli
-    npm install
-
-Usage
+## Usage
 
 To start the Pomodoro timer web app, run the following command:
+   
+   ```bash
+   pomo start
+   ```
 
-bash
+Replace `pomo` with the appropriate path if needed.
 
-node pomo-cli start
+<!--  
+## Configuration
 
-Replace pomo-cli with the path to the main JavaScript file if needed.
-Configuration
+- **Web App URL**: Replace `'https://your-pomo-timer-url.com'` in the code with the actual URL of your Pomodoro timer web app.
+- **Express.js Backend**: Customize the Express.js server code in `server.js` to fit your requirements.
+-->
 
-    Web App URL: Replace 'https://your-pomo-timer-url.com' in the code with the actual URL of your Pomodoro timer web app.
-    Express.js Backend: Customize the Express.js server code in server.js to fit your requirements.
-
-Contributing
+## Contributing
 
 Contributions are welcome! If you have any suggestions, feature requests, or bug reports, please open an issue or submit a pull request.
-License
 
-This project is licensed under the MIT License.
-Acknowledgements
+## License
 
-    Commander.js - For command-line interface handling.
-    Express.js - For the backend server.
-    React, Vue.js, Angular - For frontend framework options.
+This project is licensed under the [MIT License](LICENSE).
 
-vbnet
+## Acknowledgements
 
-
-Feel free to customize this template according to your project's specific details, such as adding more detailed installation instructions, usage examples, or acknowledgements.
-
-
+- [Commander.js](https://github.com/tj/commander.js) - For command-line interface handling.
+- [Express.js](https://expressjs.com/) - As the backend server. (soon migrating to hono or elysia)
+- [React](https://reactjs.org/) - As the frontend framework.
