@@ -1,24 +1,24 @@
 # Pomi (cli tool)
 
-Pomo is a CLI tool that allows you to start a Pomodoro timer web app using a command-line interface. It interacts with an Express.js backend and utilizes a frontend framework (React, Vue.js, or Angular) for the UI.
+Pomi is a CLI tool that allows you to start a Pomodoro timer web app using a command-line interface. It interacts with an Express.js backend and utilizes a frontend framework (React, Vue.js, or Angular) for the UI.
 
 ## Features
 
-- **Start Pomodoro Timer**: Start the Pomodoro timer web app in the default browser with a single command.
-- **Frontend Framework Support**: Choose from React, Vue.js, or Angular for the frontend framework is you want to create your custom UI.
+- **Start Pomodoro Timer**: Start the Pomodoro Timer web app in the default browser with a single command.
+- **Frontend Framework Support**: Choose React, Vue.js, or Angular for the frontend framework if you want to create your custom UI.
 
 ## Installation
 
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/HawkdotDev/pomo.git
+   git clone https://github.com/HawkdotDev/pomi.git
    ```
 
 2. Install dependencies:
 
    ```bash
-   cd pomo && npm install
+   cd pomi && npm install
    ```
 
 ## Usage
@@ -26,10 +26,10 @@ Pomo is a CLI tool that allows you to start a Pomodoro timer web app using a com
 - To start the Pomodoro timer web app, run the following command:
    
    ```bash
-   pomo start
+   pomi start
    ```
 
-- Replace `pomo` with the appropriate path if needed.
+- Replace `pomi` with the appropriate path if needed.
 
 <!--  
 ## Configuration
