@@ -1,4 +1,4 @@
-# Pomo (cli tool)
+# Pomi (cli tool)
 
 Pomo is a CLI tool that allows you to start a Pomodoro timer web app using a command-line interface. It interacts with an Express.js backend and utilizes a frontend framework (React, Vue.js, or Angular) for the UI.
 
