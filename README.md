@@ -1,13 +1,19 @@
-# Pomi (cli tool)
+# Pomi (Python CLI Tool)
 
-Pomi is a CLI tool that allows you to start a Pomodoro timer web app using a command-line interface. It interacts with an Express.js backend and utilizes a frontend framework (React, Vue.js, or Angular) for the UI.
+Pomi is a command-line interface (CLI) tool designed to create and manage Pomodoro timers. It leverages Python and integrates with OpenCV (cv2), Pygame, and NumPy libraries to offer a dynamic and interactive timer experience.
 
 ## Features
 
-- **Start Pomodoro Timer**: Start the Pomodoro Timer web app in the default browser with a single command.
-- **Frontend Framework Support**: Choose React, Vue.js, or Angular for the frontend framework if you want to create your custom UI.
+- **Create Pomodoro Timers**: Initiate Pomodoro timers directly from the command line.
+- **Interactive UI**: Utilize OpenCV and Pygame to create an engaging visual interface for the timer.
+- **Customizable Settings**: Tailor timer settings such as work and break durations to suit your workflow.
 
 ## Installation
+
+1. Install Pomi from PyPI:
+
+   ```bash
+   pip install pomi
 
 1. Clone the repository:
 
