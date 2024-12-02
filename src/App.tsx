@@ -1,145 +1,116 @@
-import React, { useState } from 'react';
-import { Navbar } from './components/Navbar';
-import { Sidebar } from './components/Sidebar';
-import { TimerDisplay } from './components/TimerDisplay';
-import { QuickSettings } from './components/QuickSettings';
-import { useTimer } from './hooks/useTimer';
-import { TimerPreset, ThemeColors, defaultPresets, defaultTheme } from './types/timer';
+import { useState } from "react";
+import { useTimer } from "./hooks/useTimer";
+import { usePresets } from "./hooks/usePresets";
+import { TimerDisplay } from "./components/TimerDisplay";
+import { SessionProgress } from "./components/SessionProgress";
+import { CustomBreakForm } from "./components/CustomBreakForm";
+import { CustomBreaksList } from "./components/CustomBreaksList";
+import { TimerSettings } from "./components/TimerSettings";
+import { PresetSelector } from "./components/PresetSelector";
+import { PresetChain } from "./components/PresetChain";
+// import { Timer, Plus } from "lucide-react";
+import { Toaster } from "sonner";
 
-export default function App() {
-  const [presets, setPresets] = useState<TimerPreset[]>(defaultPresets);
-  const [selectedPreset, setSelectedPreset] = useState<TimerPreset>(defaultPresets[0]);
-  const [showPresetForm, setShowPresetForm] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const [colors, setColors] = useState<ThemeColors>(defaultTheme);
-  const [isCustom, setIsCustom] = useState(false);
-  const [customSettings, setCustomSettings] = useState({
-    workMinutes: 25,
-    workSeconds: 0,
-    breakMinutes: 5,
-    breakSeconds: 0,
-    iterations: 4
-  });
-  
-  const activeSettings = isCustom ? customSettings : selectedPreset;
-  
+import error from "./assets/icons/error.svg";
+
+function App() {
   const {
-    isBreak,
     timeLeft,
-    isRunning,
-    progress,
-    currentIteration,
-    isComplete,
+    isActive,
+    timerState,
+    sessions,
+    customBreaks,
+    settings,
     toggleTimer,
-    reset,
-    updateSettings
-  } = useTimer(activeSettings);
+    resetTimer,
+    addCustomBreak,
+    removeCustomBreak,
+    updateSettings,
+  } = useTimer();
 
-  const handleSavePreset = (newPreset: Omit<TimerPreset, 'id'>) => {
-    const preset: TimerPreset = {
-      ...newPreset,
-      id: Date.now().toString(),
-      workSeconds: 0,
-      breakSeconds: 0
-    };
-    setPresets((prev) => [...prev, preset]);
-    setSelectedPreset(preset);
-    setShowPresetForm(false);
-    setIsCustom(false);
-  };
+  const { presets, chainedPresets, addToChain, removeFromChain, reorderChain } =
+    usePresets();
 
-  const handleCustomSettingChange = (
-    key: keyof typeof customSettings,
-    value: number
-  ) => {
-    setCustomSettings(prev => {
-      const newSettings = { ...prev, [key]: value };
-      updateSettings(newSettings);
-      return newSettings;
-    });
-    setIsCustom(true);
-  };
-
-  const handlePresetSelect = (preset: TimerPreset) => {
-    setSelectedPreset(preset);
-    setIsCustom(false);
-  };
-
-  const handleSaveCustomAsPreset = () => {
-    setShowPresetForm(true);
-    setShowSettings(true);
-  };
+  const [showBreakForm, setShowBreakForm] = useState(false);
 
   return (
-    <div 
-      className="min-h-screen transition-colors pb-32"
-      style={{ backgroundColor: colors.background, color: colors.text }}
-    >
-      <Navbar 
-        showSettings={showSettings}
-        onToggleSettings={() => setShowSettings(!showSettings)}
-      />
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+      <Toaster position="top-center" />
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
+        <div className="flex items-center justify-center space-x-2 mb-8">
+          {/* <Timer size={24} color="#f43f5e" className="w-6 h-6" /> */}
+          <img src={error} alt="error logo" />
+          <h1 className="text-2xl font-bold text-gray-800">Pomi</h1>
+        </div>
 
-      <Sidebar
-        show={showSettings}
-        onClose={() => setShowSettings(false)}
-        showPresetForm={showPresetForm}
-        presets={presets}
-        selectedPreset={selectedPreset}
-        onSelectPreset={handlePresetSelect}
-        onOpenPresetForm={() => setShowPresetForm(true)}
-        onSavePreset={handleSavePreset}
-        onCancelPresetForm={() => setShowPresetForm(false)}
-        colors={colors}
-        onColorChange={setColors}
-        initialPresetValues={isCustom ? customSettings : undefined}
-      />
+        <TimerDisplay
+          timeLeft={timeLeft}
+          timerState={timerState}
+          isActive={isActive}
+          onToggle={toggleTimer}
+          onReset={resetTimer}
+        />
 
-      <main className="pt-16 min-h-screen flex items-center justify-center">
-        <div className="w-full max-w-4xl p-8">
-          {isComplete ? (
-            <div className="text-center">
-              <h2 className="text-3xl font-bold mb-4">Session Complete!</h2>
-              <button
-                onClick={reset}
-                className="px-6 py-3 bg-gray-800/50 hover:bg-gray-700/50 rounded-lg transition-colors"
-              >
-                Start New Session
-              </button>
-            </div>
+        <div className="mt-8">
+          <TimerSettings
+            autoContinue={settings.autoContinue}
+            onAutoContinueChange={(value) =>
+              updateSettings({ autoContinue: value })
+            }
+          />
+        </div>
+
+        <div className="mt-8 flex justify-center">
+          <SessionProgress sessions={sessions} totalSessions={4} />
+        </div>
+
+        <div className="mt-8">
+          <h2 className="text-lg font-semibold text-gray-800 mb-4">
+            Preset Chain
+          </h2>
+          <PresetSelector presets={presets} onAddToChain={addToChain} />
+          <div className="mt-4">
+            <PresetChain
+              chainedPresets={chainedPresets}
+              onRemove={removeFromChain}
+              onReorder={reorderChain}
+            />
+          </div>
+        </div>
+
+        <div className="mt-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-800">
+              Custom Breaks
+            </h2>
+            <button
+              onClick={() => setShowBreakForm(true)}
+              className="flex items-center space-x-1 text-rose-500 hover:text-rose-600 transition-colors"
+            >
+              {/* <Plus className="w-5 h-5" /> */}
+              <img src={error} alt="error logo" />
+              <span>Add Break</span>
+            </button>
+          </div>
+
+          {showBreakForm ? (
+            <CustomBreakForm
+              onSubmit={(data) => {
+                addCustomBreak(data);
+                setShowBreakForm(false);
+              }}
+              onCancel={() => setShowBreakForm(false)}
+            />
           ) : (
-            <TimerDisplay
-              isBreak={isBreak}
-              timeLeft={timeLeft}
-              isRunning={isRunning}
-              progress={progress}
-              currentIteration={currentIteration}
-              totalIterations={activeSettings.iterations}
-              workColor={colors.workColor}
-              breakColor={colors.breakColor}
-              presetName={selectedPreset.name}
-              onToggle={toggleTimer}
-              onReset={reset}
-              onSaveAsPreset={isCustom ? handleSaveCustomAsPreset : undefined}
-              isCustom={isCustom}
+            <CustomBreaksList
+              breaks={customBreaks}
+              onDelete={removeCustomBreak}
             />
           )}
         </div>
-      </main>
-
-      <QuickSettings
-        workMinutes={activeSettings.workMinutes}
-        workSeconds={activeSettings.workSeconds}
-        breakMinutes={activeSettings.breakMinutes}
-        breakSeconds={activeSettings.breakSeconds}
-        iterations={activeSettings.iterations}
-        onWorkMinutesChange={(value) => handleCustomSettingChange('workMinutes', value)}
-        onWorkSecondsChange={(value) => handleCustomSettingChange('workSeconds', value)}
-        onBreakMinutesChange={(value) => handleCustomSettingChange('breakMinutes', value)}
-        onBreakSecondsChange={(value) => handleCustomSettingChange('breakSeconds', value)}
-        onIterationsChange={(value) => handleCustomSettingChange('iterations', value)}
-        disabled={isRunning}
-      />
+      </div>
     </div>
   );
 }
+
+export default App;

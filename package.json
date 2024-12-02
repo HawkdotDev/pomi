@@ -1,7 +1,7 @@
 {
   "name": "pomomer",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,12 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "lucide-react": "^0.344.0",
+    "better-sqlite3": "^11.6.0",
+    "lucide-react": "^0.462.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "sonner": "^1.4.3",
+    "vite-plugin-node-polyfills": "^0.22.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
+    "@types/better-sqlite3": "^7.6.9",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
@@ -29,5 +33,9 @@
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.3.0",
     "vite": "^5.4.2"
+  },
+  "author": {
+    "name": "Dwaipayan Dutta",
+    "url": "https://github.com/HawkdotDev"
   }
 }

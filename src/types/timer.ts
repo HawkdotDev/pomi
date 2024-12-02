@@ -1,53 +1,59 @@
+export type TimerState = 'work' | 'break' | 'longBreak' | 'customBreak';
+
+export interface TimerSettings {
+  workDuration: number;
+  breakDuration: number;
+  longBreakDuration: number;
+  sessionsUntilLongBreak: number;
+  autoContinue: boolean;
+  theme: 'light' | 'dark';
+}
+
+export interface CustomBreak {
+  id: string;
+  name: string;
+  startTime?: string;
+  afterSessions?: number;
+  duration: number;
+  isActive: boolean;
+}
+
+export interface CustomBreakFormData {
+  name: string;
+  startTime?: string;
+  afterSessions?: number;
+  duration: number;
+}
+
 export interface TimerPreset {
   id: string;
   name: string;
-  workMinutes: number;
-  breakMinutes: number;
-  workSeconds: number;
-  breakSeconds: number;
-  iterations: number;
+  workDuration: number;
+  breakDuration: number;
+  longBreakDuration: number;
+  sessionsUntilLongBreak: number;
 }
 
-export interface ThemeColors {
-  background: string;
-  workColor: string;
-  breakColor: string;
-  text: string;
+export interface ChainedPreset extends TimerPreset {
+  repetitions: number;
+  order: number;
 }
 
-export const defaultPresets: TimerPreset[] = [
-  {
-    id: 'classic',
-    name: 'Classic Pomodoro',
-    workMinutes: 25,
-    breakMinutes: 5,
-    workSeconds: 0,
-    breakSeconds: 0,
-    iterations: 4
-  },
-  {
-    id: 'short',
-    name: 'Short Sessions',
-    workMinutes: 15,
-    breakMinutes: 3,
-    workSeconds: 0,
-    breakSeconds: 0,
-    iterations: 6
-  },
-  {
-    id: 'long',
-    name: 'Long Focus',
-    workMinutes: 45,
-    breakMinutes: 15,
-    workSeconds: 0,
-    breakSeconds: 0,
-    iterations: 2
-  }
-];
+export interface PresetChain {
+  id: string;
+  name: string;
+  presets: ChainedPreset[];
+}
 
-export const defaultTheme: ThemeColors = {
-  background: '#111827',
-  workColor: '#ef4444',
-  breakColor: '#10b981',
-  text: '#ffffff'
-};
+export type WeekDay = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
+
+export interface PresetSchedule {
+  id: string;
+  presetId?: string;
+  chainId?: string;
+  startTime: string;
+  weekDays: WeekDay[];
+  isRecurring: boolean;
+  specificDate?: string;
+  isActive: boolean;
+}
