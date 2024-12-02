@@ -1,0 +1,85 @@
+import React from 'react';
+import { Play, Plus, Trash, Edit } from 'lucide-react';
+import { PresetChain } from '../types/timer';
+import { formatTime } from '../utils/timeFormat';
+
+interface PresetChainListProps {
+  chains: PresetChain[];
+  onSelectChain: (chain: PresetChain) => void;
+  onCreateChain: () => void;
+  onEditChain: (chain: PresetChain) => void;
+  onDeleteChain: (chainId: string) => void;
+}
+
+export function PresetChainList({
+  chains,
+  onSelectChain,
+  onCreateChain,
+  onEditChain,
+  onDeleteChain
+}: PresetChainListProps) {
+  const getTotalDuration = (chain: PresetChain) => {
+    return chain.presets.reduce((total, { preset, delayMinutes, delaySeconds }) => {
+      const presetDuration = (preset.workMinutes * 60 + preset.workSeconds) * preset.iterations +
+                            (preset.breakMinutes * 60 + preset.breakSeconds) * (preset.iterations - 1);
+      const delay = delayMinutes * 60 + delaySeconds;
+      return total + presetDuration + delay;
+    }, 0);
+  };
+
+  return (
+    <div className="flex flex-col gap-4 w-full max-w-md">
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-semibold">Preset Chains</h2>
+        <button
+          onClick={onCreateChain}
+          className="p-2 rounded-full hover:bg-gray-700 transition-colors"
+          title="Create new chain"
+        >
+          <Plus size={20} />
+        </button>
+      </div>
+      
+      <div className="grid grid-cols-1 gap-2">
+        {chains.map((chain) => (
+          <div
+            key={chain.id}
+            className="p-4 bg-gray-800 hover:bg-gray-700/50 rounded-lg transition-colors"
+          >
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="font-medium">{chain.name}</h3>
+                <p className="text-sm text-gray-400">
+                  {chain.presets.length} presets • Total: {formatTime(getTotalDuration(chain))}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => onSelectChain(chain)}
+                  className="p-2 rounded-full hover:bg-gray-600 transition-colors"
+                  title="Start chain"
+                >
+                  <Play size={16} />
+                </button>
+                <button
+                  onClick={() => onEditChain(chain)}
+                  className="p-2 rounded-full hover:bg-gray-600 transition-colors"
+                  title="Edit chain"
+                >
+                  <Edit size={16} />
+                </button>
+                <button
+                  onClick={() => onDeleteChain(chain.id)}
+                  className="p-2 rounded-full hover:bg-gray-600 transition-colors text-red-400 hover:text-red-300"
+                  title="Delete chain"
+                >
+                  <Trash size={16} />
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

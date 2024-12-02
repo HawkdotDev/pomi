@@ -1,25 +1,26 @@
 {
+  "homepage": "https://HawkdotDev.github.io/pomomer",
   "name": "pomomer",
   "private": true,
   "version": "1.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "predeploy": "bun run build",
+    "deploy": "gh-pages -d build",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
-    "better-sqlite3": "^11.6.0",
-    "lucide-react": "^0.462.0",
+    "gh-pages": "^6.2.0",
+    "lucide-react": "^0.344.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "sonner": "^1.4.3",
-    "vite-plugin-node-polyfills": "^0.22.0"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
-    "@types/better-sqlite3": "^7.6.9",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",

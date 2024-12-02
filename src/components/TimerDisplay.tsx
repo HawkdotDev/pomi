@@ -1,69 +1,94 @@
-import { TimerState } from "../types/timer";
-import { formatTime } from "../utils/formatTime";
-import error from "../assets/icons/error.svg";
+import React from 'react';
+import { Play, Pause, RotateCcw, Save } from 'lucide-react';
+import { CircularProgress } from './CircularProgress';
+import { formatTime } from '../utils/timeFormat';
 
 interface TimerDisplayProps {
+  isBreak: boolean;
   timeLeft: number;
-  timerState: TimerState;
-  isActive: boolean;
+  isRunning: boolean;
+  progress: number;
+  currentIteration: number;
+  totalIterations: number;
+  workColor: string;
+  breakColor: string;
+  presetName: string;
+  waitingForManualStart?: boolean;
   onToggle: () => void;
   onReset: () => void;
+  onSaveAsPreset?: () => void;
+  isCustom?: boolean;
 }
 
 export function TimerDisplay({
+  isBreak,
   timeLeft,
-  timerState,
-  isActive,
+  isRunning,
+  progress,
+  currentIteration,
+  totalIterations,
+  workColor,
+  breakColor,
+  presetName,
+  waitingForManualStart,
   onToggle,
   onReset,
+  onSaveAsPreset,
+  isCustom
 }: TimerDisplayProps) {
-  const stateColors: Record<TimerState, string> = {
-    work: "bg-rose-500",
-    break: "bg-emerald-500",
-    longBreak: "bg-blue-500",
-    customBreak: ""
-  };
-
-  const stateText: Record<TimerState, string> = {
-    work: "Focus Time",
-    break: "Short Break",
-    longBreak: "Long Break",
-    customBreak: ""
-  };
-
   return (
-    <div className="flex flex-col items-center space-y-8">
-      <div className="relative w-64 h-64">
-        <div
-          className={`absolute inset-0 rounded-full ${stateColors[timerState]} opacity-10`}
-        />
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <img src={error} alt="error logo" />
-          <h2 className="text-xl font-medium text-gray-600">
-            {stateText[timerState]}
-          </h2>
-          <div className="text-6xl font-bold text-gray-800 mt-2">
-            {formatTime(timeLeft)}
+    <div className="flex flex-col items-center gap-8">
+      <div className="text-center">
+        <h2 className="text-2xl font-semibold">
+          {isBreak ? 'Break Time' : 'Work Time'}
+          {waitingForManualStart && (
+            <span className="ml-2 text-sm font-normal text-yellow-500">
+              Waiting for manual start...
+            </span>
+          )}
+        </h2>
+        <p className="text-sm opacity-75 mt-1">
+          Using {isCustom ? 'Custom Timer' : presetName}
+          {isCustom && onSaveAsPreset && (
+            <button
+              onClick={onSaveAsPreset}
+              className="ml-2 inline-flex items-center text-blue-400 hover:text-blue-300"
+              title="Save as preset"
+            >
+              <Save size={14} className="mr-1" />
+              Save as preset
+            </button>
+          )}
+        </p>
+      </div>
+      
+      <CircularProgress 
+        progress={progress} 
+        isBreak={isBreak}
+        workColor={workColor}
+        breakColor={breakColor}
+        size={300}
+      >
+        <div className="flex flex-col items-center gap-2">
+          <div className="text-7xl font-mono">{formatTime(timeLeft)}</div>
+          <div className="text-sm opacity-75">
+            Session {currentIteration} of {totalIterations}
           </div>
         </div>
-      </div>
+      </CircularProgress>
 
-      <div className="flex space-x-4">
+      <div className="flex gap-4">
         <button
           onClick={onToggle}
-          className={`p-4 rounded-full ${
-            isActive
-              ? "bg-rose-100 text-rose-600"
-              : "bg-emerald-100 text-emerald-600"
-          } hover:opacity-90 transition-opacity`}
+          className="p-4 rounded-full bg-gray-800/50 hover:bg-gray-700/50 transition-colors"
         >
-          <img src={error} alt="error logo" />
+          {isRunning ? <Pause size={28} /> : <Play size={28} />}
         </button>
         <button
           onClick={onReset}
-          className="p-4 rounded-full bg-gray-100 text-gray-600 hover:opacity-90 transition-opacity"
+          className="p-4 rounded-full bg-gray-800/50 hover:bg-gray-700/50 transition-colors"
         >
-          <img src={error} alt="error logo" />
+          <RotateCcw size={28} />
         </button>
       </div>
     </div>

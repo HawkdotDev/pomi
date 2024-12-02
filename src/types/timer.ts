@@ -1,42 +1,21 @@
-export type TimerState = 'work' | 'break' | 'longBreak' | 'customBreak';
-
-export interface TimerSettings {
-  workDuration: number;
-  breakDuration: number;
-  longBreakDuration: number;
-  sessionsUntilLongBreak: number;
-  autoContinue: boolean;
-  theme: 'light' | 'dark';
-}
-
-export interface CustomBreak {
-  id: string;
-  name: string;
-  startTime?: string;
-  afterSessions?: number;
-  duration: number;
-  isActive: boolean;
-}
-
-export interface CustomBreakFormData {
-  name: string;
-  startTime?: string;
-  afterSessions?: number;
-  duration: number;
-}
+import { z } from 'zod';
 
 export interface TimerPreset {
   id: string;
   name: string;
-  workDuration: number;
-  breakDuration: number;
-  longBreakDuration: number;
-  sessionsUntilLongBreak: number;
+  workMinutes: number;
+  breakMinutes: number;
+  workSeconds: number;
+  breakSeconds: number;
+  iterations: number;
+  requireManualStart?: boolean;
+  isDefault?: boolean;
 }
 
-export interface ChainedPreset extends TimerPreset {
-  repetitions: number;
-  order: number;
+export interface ChainedPreset {
+  preset: TimerPreset;
+  delayMinutes: number;
+  delaySeconds: number;
 }
 
 export interface PresetChain {
@@ -45,15 +24,92 @@ export interface PresetChain {
   presets: ChainedPreset[];
 }
 
-export type WeekDay = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
-
-export interface PresetSchedule {
-  id: string;
-  presetId?: string;
-  chainId?: string;
-  startTime: string;
-  weekDays: WeekDay[];
-  isRecurring: boolean;
-  specificDate?: string;
-  isActive: boolean;
+export interface ThemeColors {
+  background: string;
+  workColor: string;
+  breakColor: string;
+  text: string;
 }
+
+export const RecurrenceType = {
+  NONE: 'none',
+  DAILY: 'daily',
+  WEEKLY: 'weekly',
+  MONTHLY: 'monthly'
+} as const;
+
+export type RecurrenceType = typeof RecurrenceType[keyof typeof RecurrenceType];
+
+export interface Schedule {
+  id: string;
+  name: string;
+  presetId: string;
+  chainId?: string;
+  startTime: string; // HH:mm format
+  days?: number[]; // 0-6 for weekly, 1-31 for monthly
+  recurrence: RecurrenceType;
+  isEnabled: boolean;
+}
+
+export const scheduleSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  presetId: z.string(),
+  chainId: z.string().optional(),
+  startTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Invalid time format"),
+  days: z.array(z.number()).optional(),
+  recurrence: z.enum([
+    RecurrenceType.NONE,
+    RecurrenceType.DAILY,
+    RecurrenceType.WEEKLY,
+    RecurrenceType.MONTHLY
+  ]),
+  isEnabled: z.boolean()
+});
+
+export const defaultPresets: TimerPreset[] = [
+  {
+    id: 'classic',
+    name: 'Classic Pomodoro',
+    workMinutes: 25,
+    breakMinutes: 5,
+    workSeconds: 0,
+    breakSeconds: 0,
+    iterations: 4,
+    requireManualStart: false,
+    isDefault: true
+  },
+  {
+    id: 'short',
+    name: 'Short Sessions',
+    workMinutes: 15,
+    breakMinutes: 3,
+    workSeconds: 0,
+    breakSeconds: 0,
+    iterations: 6,
+    requireManualStart: false
+  },
+  {
+    id: 'long',
+    name: 'Long Focus',
+    workMinutes: 45,
+    breakMinutes: 15,
+    workSeconds: 0,
+    breakSeconds: 0,
+    iterations: 2,
+    requireManualStart: false
+  }
+];
+
+export const lightTheme: ThemeColors = {
+  background: '#f3f4f6',
+  workColor: '#ef4444',
+  breakColor: '#10b981',
+  text: '#111827'
+};
+
+export const darkTheme: ThemeColors = {
+  background: '#111827',
+  workColor: '#ef4444',
+  breakColor: '#10b981',
+  text: '#ffffff'
+};

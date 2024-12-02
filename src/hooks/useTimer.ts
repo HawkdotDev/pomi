@@ -1,191 +1,112 @@
 import { useState, useEffect, useCallback } from 'react';
-import { TimerState, TimerSettings, CustomBreak } from '../types/timer';
-import { toast } from 'sonner';
-import { dbOperations } from '../db';
+import { TimerPreset } from '../types/timer';
 
-export function useTimer() {
-  const [settings, setSettings] = useState<TimerSettings>(() => dbOperations.getSettings());
-  const [timeLeft, setTimeLeft] = useState(settings.workDuration);
-  const [isActive, setIsActive] = useState(false);
-  const [timerState, setTimerState] = useState<TimerState>('work');
-  const [sessions, setSessions] = useState(0);
-  const [customBreaks, setCustomBreaks] = useState<CustomBreak[]>(() => dbOperations.getCustomBreaks());
-  const [currentCustomBreak, setCurrentCustomBreak] = useState<CustomBreak | null>(null);
+interface TimerSettings extends TimerPreset {
+  workMinutes: number;
+  breakMinutes: number;
+  workSeconds: number;
+  breakSeconds: number;
+  iterations: number;
+  requireManualStart?: boolean;
+}
 
-  const getInitialTime = useCallback((state: TimerState) => {
-    switch (state) {
-      case 'work':
-        return settings.workDuration;
-      case 'break':
-        return settings.breakDuration;
-      case 'longBreak':
-        return settings.longBreakDuration;
-      case 'customBreak':
-        return (currentCustomBreak?.duration || 0) * 60;
-      default:
-        return settings.workDuration;
-    }
-  }, [settings, currentCustomBreak]);
+export function useTimer(initialSettings: TimerSettings) {
+  const [settings, setSettings] = useState(initialSettings);
+  const [isBreak, setIsBreak] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(
+    initialSettings.workMinutes * 60 + initialSettings.workSeconds
+  );
+  const [isRunning, setIsRunning] = useState(false);
+  const [progress, setProgress] = useState(1);
+  const [currentIteration, setCurrentIteration] = useState(1);
+  const [isComplete, setIsComplete] = useState(false);
+  const [waitingForManualStart, setWaitingForManualStart] = useState(false);
 
-  const getNextStateMessage = useCallback((currentState: TimerState, nextState: TimerState) => {
-    const messages = {
-      work: 'Time to focus!',
-      break: 'Take a short break.',
-      longBreak: 'Time for a long break!',
-      customBreak: `Time for ${currentCustomBreak?.name || 'a custom break'}!`,
-    };
-    
-    return `${messages[currentState]} completed. ${messages[nextState]}`;
-  }, [currentCustomBreak]);
+  const totalSeconds = isBreak 
+    ? settings.breakMinutes * 60 + settings.breakSeconds
+    : settings.workMinutes * 60 + settings.workSeconds;
 
-  const checkCustomBreaks = useCallback(() => {
-    const now = new Date();
-    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+  const reset = useCallback(() => {
+    setIsBreak(false);
+    setTimeLeft(settings.workMinutes * 60 + settings.workSeconds);
+    setIsRunning(false);
+    setProgress(1);
+    setCurrentIteration(1);
+    setIsComplete(false);
+    setWaitingForManualStart(false);
+  }, [settings.workMinutes, settings.workSeconds]);
 
-    // Check time-based breaks
-    const timeBasedBreak = customBreaks.find(
-      breakItem => breakItem.startTime === currentTime && !breakItem.isActive
-    );
-
-    if (timeBasedBreak) {
-      setCurrentCustomBreak(timeBasedBreak);
-      setTimerState('customBreak');
-      setTimeLeft(timeBasedBreak.duration * 60);
-      setIsActive(false);
-      dbOperations.updateCustomBreakStatus(timeBasedBreak.id, true);
-      setCustomBreaks(prev => 
-        prev.map(b => b.id === timeBasedBreak.id ? { ...b, isActive: true } : b)
-      );
-      return true;
-    }
-
-    // Check session-based breaks
-    const sessionBasedBreak = customBreaks.find(
-      breakItem => breakItem.afterSessions === sessions && !breakItem.isActive
-    );
-
-    if (sessionBasedBreak) {
-      setCurrentCustomBreak(sessionBasedBreak);
-      setTimerState('customBreak');
-      setTimeLeft(sessionBasedBreak.duration * 60);
-      setIsActive(false);
-      dbOperations.updateCustomBreakStatus(sessionBasedBreak.id, true);
-      setCustomBreaks(prev => 
-        prev.map(b => b.id === sessionBasedBreak.id ? { ...b, isActive: true } : b)
-      );
-      return true;
-    }
-
-    return false;
-  }, [customBreaks, sessions]);
-
-  const nextTimer = useCallback(() => {
-    let nextState: TimerState = 'work';
-    
-    if (timerState === 'work') {
-      const nextSessions = sessions + 1;
-      setSessions(nextSessions);
-      
-      if (!checkCustomBreaks()) {
-        if (nextSessions % settings.sessionsUntilLongBreak === 0) {
-          nextState = 'longBreak';
-        } else {
-          nextState = 'break';
-        }
-      } else {
-        nextState = 'customBreak';
-      }
-    } else if (timerState === 'customBreak') {
-      setCurrentCustomBreak(null);
-      nextState = 'work';
-    } else {
-      if (!checkCustomBreaks()) {
-        nextState = 'work';
-      } else {
-        nextState = 'customBreak';
-      }
-    }
-
-    const message = getNextStateMessage(timerState, nextState);
-    toast(message, {
-      duration: 4000,
-      className: 'bg-white',
-    });
-
-    setTimerState(nextState);
-    setTimeLeft(getInitialTime(nextState));
-    setIsActive(settings.autoContinue);
-  }, [timerState, sessions, settings, checkCustomBreaks, getNextStateMessage, getInitialTime]);
-
-  const toggleTimer = useCallback(() => {
-    setIsActive(prev => !prev);
-  }, []);
-
-  const resetTimer = useCallback(() => {
-    setIsActive(false);
-    setTimeLeft(getInitialTime(timerState));
-  }, [timerState, getInitialTime]);
-
-  const addCustomBreak = useCallback((breakData: Omit<CustomBreak, 'id' | 'isActive'>) => {
-    const newBreak: CustomBreak = {
-      ...breakData,
-      id: Date.now().toString(),
-      isActive: false,
-    };
-    dbOperations.addCustomBreak(newBreak);
-    setCustomBreaks(prev => [...prev, newBreak]);
-  }, []);
-
-  const removeCustomBreak = useCallback((id: string) => {
-    dbOperations.deleteCustomBreak(id);
-    setCustomBreaks(prev => prev.filter(b => b.id !== id));
-  }, []);
-
-  const updateSettings = useCallback((updates: Partial<TimerSettings>) => {
-    const newSettings = { ...settings, ...updates };
-    dbOperations.updateSettings(newSettings);
+  const updateSettings = (newSettings: TimerSettings) => {
     setSettings(newSettings);
-  }, [settings]);
+    if (!isRunning) {
+      setTimeLeft(newSettings.workMinutes * 60 + newSettings.workSeconds);
+      setProgress(1);
+    }
+  };
+
+  const toggleTimer = () => {
+    if (waitingForManualStart) {
+      setWaitingForManualStart(false);
+    }
+    setIsRunning((prev) => !prev);
+  };
 
   useEffect(() => {
-    let interval: number | undefined;
+    if (!isRunning) {
+      updateSettings(initialSettings);
+    }
+  }, [initialSettings, isRunning]);
 
-    if (isActive && timeLeft > 0) {
-      interval = window.setInterval(() => {
-        setTimeLeft(prev => prev - 1);
+  useEffect(() => {
+    let interval: number;
+
+    if (isRunning && timeLeft > 0 && !waitingForManualStart) {
+      interval = setInterval(() => {
+        setTimeLeft((prev) => {
+          const newTime = prev - 1;
+          setProgress(newTime / totalSeconds);
+          return newTime;
+        });
       }, 1000);
     } else if (timeLeft === 0) {
-      nextTimer();
+      if (isBreak) {
+        if (currentIteration < settings.iterations) {
+          setCurrentIteration((prev) => prev + 1);
+          setIsBreak(false);
+          setTimeLeft(settings.workMinutes * 60 + settings.workSeconds);
+          setProgress(1);
+          if (settings.requireManualStart) {
+            setWaitingForManualStart(true);
+            setIsRunning(false);
+          }
+        } else {
+          setIsComplete(true);
+          setIsRunning(false);
+        }
+      } else {
+        setIsBreak(true);
+        setTimeLeft(settings.breakMinutes * 60 + settings.breakSeconds);
+        setProgress(1);
+        if (settings.requireManualStart) {
+          setWaitingForManualStart(true);
+          setIsRunning(false);
+        }
+      }
     }
 
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [isActive, timeLeft, nextTimer]);
-
-  // Check for time-based breaks every minute
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (!isActive) {
-        checkCustomBreaks();
-      }
-    }, 60000);
-
     return () => clearInterval(interval);
-  }, [checkCustomBreaks, isActive]);
+  }, [isRunning, timeLeft, isBreak, settings, currentIteration, totalSeconds, waitingForManualStart]);
 
   return {
+    isBreak,
     timeLeft,
-    isActive,
-    timerState,
-    sessions,
-    customBreaks,
-    currentCustomBreak,
-    settings,
+    isRunning,
+    progress,
+    currentIteration,
+    isComplete,
+    waitingForManualStart,
     toggleTimer,
-    resetTimer,
-    addCustomBreak,
-    removeCustomBreak,
-    updateSettings,
+    reset,
+    updateSettings
   };
 }
