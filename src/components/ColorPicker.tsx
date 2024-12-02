@@ -1,4 +1,3 @@
-import React from 'react';
 import { ThemeColors } from '../types/timer';
 
 interface ColorPickerProps {

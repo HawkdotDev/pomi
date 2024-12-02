@@ -1,6 +1,7 @@
-import React from 'react';
 import { TimerPreset } from '../types/timer';
-import { Settings, Plus } from 'lucide-react';
+
+import Plus from '../assets/icons/plus.svg'
+// import Settings from '../assets/icons/settings.svg'
 
 interface PresetSelectorProps {
   presets: TimerPreset[];
@@ -24,7 +25,7 @@ export function PresetSelector({
           className="p-2 rounded-full hover:bg-gray-700 transition-colors"
           title="Add new preset"
         >
-          <Plus size={20} />
+          <img src={Plus} alt="Logo" />
         </button>
       </div>
       <div className="grid grid-cols-1 gap-2">

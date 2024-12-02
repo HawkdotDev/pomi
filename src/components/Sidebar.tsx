@@ -1,5 +1,4 @@
-import React from 'react';
-import { X } from 'lucide-react';
+import  X  from '../assets/icons/x.svg';
 import { PresetSelector } from './PresetSelector';
 import { PresetForm } from './PresetForm';
 import { ColorPicker } from './ColorPicker';
@@ -52,7 +51,7 @@ export function Sidebar({
               onClick={onClose}
               className="p-2 rounded-lg hover:bg-gray-800 transition-colors"
             >
-              <X size={20} />
+              <img src={X} alt="Logo" />
             </button>
           </div>
         </div>

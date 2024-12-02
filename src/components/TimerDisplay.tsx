@@ -1,5 +1,8 @@
-import React from 'react';
-import { Play, Pause, RotateCcw, Save } from 'lucide-react';
+import Play from '../assets/icons/play.svg'
+import Pause from '../assets/icons/pause.svg'
+import RotateCcw from '../assets/icons/rotate.svg'
+import Save from '../assets/icons/save.svg'
+
 import { CircularProgress } from './CircularProgress';
 import { formatTime } from '../utils/timeFormat';
 
@@ -55,7 +58,7 @@ export function TimerDisplay({
               className="ml-2 inline-flex items-center text-blue-400 hover:text-blue-300"
               title="Save as preset"
             >
-              <Save size={14} className="mr-1" />
+              <img src={Save} alt="Logo" />
               Save as preset
             </button>
           )}
@@ -82,13 +85,13 @@ export function TimerDisplay({
           onClick={onToggle}
           className="p-4 rounded-full bg-gray-800/50 hover:bg-gray-700/50 transition-colors"
         >
-          {isRunning ? <Pause size={28} /> : <Play size={28} />}
+          {isRunning ? <img src={Pause} alt="Logo" /> : <img src={Play} alt="Logo" /> }
         </button>
         <button
           onClick={onReset}
           className="p-4 rounded-full bg-gray-800/50 hover:bg-gray-700/50 transition-colors"
         >
-          <RotateCcw size={28} />
+              <img src={RotateCcw} alt="Logo" />
         </button>
       </div>
     </div>

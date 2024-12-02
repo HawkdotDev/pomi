@@ -1,5 +1,5 @@
-import React from 'react';
-import { Sun, Moon } from 'lucide-react';
+import Sun from '../assets/icons/sun.svg'
+import Moon from '../assets/icons/moon.svg'
 
 interface ThemeToggleProps {
   isDark: boolean;
@@ -13,7 +13,7 @@ export function ThemeToggle({ isDark, onToggle }: ThemeToggleProps) {
       className="p-2 rounded-lg hover:bg-gray-800 transition-colors"
       title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
     >
-      {isDark ? <Sun size={20} /> : <Moon size={20} />}
+      {isDark ? <img src={Sun} alt="Logo" /> : <img src={Moon} alt="Logo" /> }
     </button>
   );
 }

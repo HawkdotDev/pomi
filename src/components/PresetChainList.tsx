@@ -1,5 +1,8 @@
-import React from 'react';
-import { Play, Plus, Trash, Edit } from 'lucide-react';
+import Play from '../assets/icons/play.svg'
+import Trash from '../assets/icons/trash.svg'
+import Plus from '../assets/icons/plus.svg'
+import Edit from '../assets/icons/edit.svg'
+
 import { PresetChain } from '../types/timer';
 import { formatTime } from '../utils/timeFormat';
 
@@ -36,7 +39,7 @@ export function PresetChainList({
           className="p-2 rounded-full hover:bg-gray-700 transition-colors"
           title="Create new chain"
         >
-          <Plus size={20} />
+          <img src={Plus} alt="Logo" />
         </button>
       </div>
       
@@ -59,21 +62,21 @@ export function PresetChainList({
                   className="p-2 rounded-full hover:bg-gray-600 transition-colors"
                   title="Start chain"
                 >
-                  <Play size={16} />
+                  <img src={Play} alt="Logo" />
                 </button>
                 <button
                   onClick={() => onEditChain(chain)}
                   className="p-2 rounded-full hover:bg-gray-600 transition-colors"
                   title="Edit chain"
                 >
-                  <Edit size={16} />
+                  <img src={Edit} alt="Logo" />
                 </button>
                 <button
                   onClick={() => onDeleteChain(chain.id)}
                   className="p-2 rounded-full hover:bg-gray-600 transition-colors text-red-400 hover:text-red-300"
                   title="Delete chain"
                 >
-                  <Trash size={16} />
+                  <img src={Trash} alt="Logo" />
                 </button>
               </div>
             </div>
