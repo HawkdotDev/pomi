@@ -18,11 +18,6 @@ A modern, feature-rich Pomodoro timer application built with React and TypeScrip
 
 ## Getting Started
 
-### Prerequisites
-
-- Node.js 18.0.0 or higher
-- npm or yarn
-
 ### Installation
 
 1. Clone the repository:
