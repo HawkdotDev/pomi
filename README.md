@@ -2,7 +2,7 @@
 
 A modern, feature-rich Pomodoro timer application built with React and TypeScript.
 
-![Pomomer Screenshot](https://source.unsplash.com/random/1200x630/?productivity)
+<img src="./public/screenshot.png" alt="Pomomer Screenshot" width="1200" height="600" />
 
 ## Features
 
