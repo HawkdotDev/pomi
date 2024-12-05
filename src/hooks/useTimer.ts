@@ -70,25 +70,29 @@ export function useTimer(initialSettings: TimerSettings) {
       }, 1000);
     } else if (timeLeft === 0) {
       if (isBreak) {
+        // After break, start next work session
+        setIsBreak(false);
+        setTimeLeft(settings.workMinutes * 60 + settings.workSeconds);
+        setProgress(1);
+        setCurrentIteration(prev => prev + 1);
+        if (settings.requireManualStart) {
+          setWaitingForManualStart(true);
+          setIsRunning(false);
+        }
+      } else {
+        // After work session
         if (currentIteration < settings.iterations) {
-          setCurrentIteration((prev) => prev + 1);
-          setIsBreak(false);
-          setTimeLeft(settings.workMinutes * 60 + settings.workSeconds);
+          // If not the last iteration, start break
+          setIsBreak(true);
+          setTimeLeft(settings.breakMinutes * 60 + settings.breakSeconds);
           setProgress(1);
           if (settings.requireManualStart) {
             setWaitingForManualStart(true);
             setIsRunning(false);
           }
         } else {
+          // If last iteration, complete the session
           setIsComplete(true);
-          setIsRunning(false);
-        }
-      } else {
-        setIsBreak(true);
-        setTimeLeft(settings.breakMinutes * 60 + settings.breakSeconds);
-        setProgress(1);
-        if (settings.requireManualStart) {
-          setWaitingForManualStart(true);
           setIsRunning(false);
         }
       }

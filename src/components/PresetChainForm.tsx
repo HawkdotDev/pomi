@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import Plus from '../assets/icons/plus.svg'
-import X from '../assets/icons/x.svg'
+import { Plus, X } from 'lucide-react';
 import { TimerPreset, ChainedPreset, PresetChain } from '../types/timer';
 import { TimeInput } from './TimeInput';
 
@@ -62,7 +61,7 @@ export function PresetChainForm({ presets, onSave, onCancel }: PresetChainFormPr
                 onClick={() => removePreset(index)}
                 className="p-1 hover:bg-gray-700 rounded-full transition-colors"
               >
-                <img src={X} alt="Logo" />
+                <X size={16} />
               </button>
             </div>
             
@@ -104,7 +103,7 @@ export function PresetChainForm({ presets, onSave, onCancel }: PresetChainFormPr
         onClick={addPreset}
         className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
       >
-        <img src={Plus} alt="Logo" />
+        <Plus size={16} />
         Add Preset
       </button>
 

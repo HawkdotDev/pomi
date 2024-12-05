@@ -3,23 +3,29 @@ import { Navbar } from './components/Navbar';
 import { Sidebar } from './components/Sidebar';
 import { TimerDisplay } from './components/TimerDisplay';
 import { QuickSettings } from './components/QuickSettings';
-import { PresetChainForm } from './components/PresetChainForm';
 import { PresetChainList } from './components/PresetChainList';
+import { PresetChainForm } from './components/PresetChainForm';
 import { useTimer } from './hooks/useTimer';
+import { useScheduler } from './hooks/useScheduler';
 import { usePresetChain } from './hooks/usePresetChain';
+import { useNotificationSettings } from './hooks/useNotificationSettings';
 import { 
   TimerPreset, 
   PresetChain, 
   ThemeColors, 
   defaultPresets, 
   darkTheme,
-  lightTheme 
+  lightTheme,
+  Schedule,
+  RecurrenceType,
+  defaultNotificationSettings
 } from './types/timer';
 
 export default function App() {
   const [isDark, setIsDark] = useState(true);
   const [presets, setPresets] = useState<TimerPreset[]>(defaultPresets);
   const [chains, setChains] = useState<PresetChain[]>([]);
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [selectedPreset, setSelectedPreset] = useState<TimerPreset>(defaultPresets[0]);
   const [selectedChain, setSelectedChain] = useState<PresetChain | null>(null);
   const [showPresetForm, setShowPresetForm] = useState(false);
@@ -36,6 +42,9 @@ export default function App() {
     iterations: 4,
     requireManualStart: false
   });
+
+  const { settings: notificationSettings, updateSettings: updateNotificationSettings } = 
+    useNotificationSettings(defaultNotificationSettings);
   
   const activeSettings = isCustom ? customSettings : selectedPreset;
   
@@ -52,7 +61,23 @@ export default function App() {
     updateSettings
   } = useTimer(activeSettings);
 
-  const chainTimer = selectedChain ? usePresetChain(selectedChain) : null;
+  const handleScheduleStart = (presetId: string, chainId?: string) => {
+    const preset = presets.find(p => p.id === presetId);
+    if (preset) {
+      setSelectedPreset(preset);
+      setIsCustom(false);
+      reset();
+      toggleTimer();
+    }
+    if (chainId) {
+      const chain = chains.find(c => c.id === chainId);
+      if (chain) {
+        setSelectedChain(chain);
+      }
+    }
+  };
+
+  useScheduler(schedules, presets, chains, handleScheduleStart);
 
   const handleToggleTheme = () => {
     setIsDark(prev => !prev);
@@ -72,13 +97,43 @@ export default function App() {
     setIsCustom(false);
   };
 
-  const handleSaveChain = (newChain: Omit<PresetChain, 'id'>) => {
-    const chain: PresetChain = {
-      ...newChain,
+  const handleSaveChain = (chain: Omit<PresetChain, 'id'>) => {
+    const newChain: PresetChain = {
+      ...chain,
       id: Date.now().toString()
     };
-    setChains(prev => [...prev, chain]);
+    setChains(prev => [...prev, newChain]);
     setShowChainForm(false);
+  };
+
+  const handleEditChain = (chain: PresetChain) => {
+    setChains(prev => prev.map(c => c.id === chain.id ? chain : c));
+    setShowChainForm(false);
+  };
+
+  const handleDeleteChain = (chainId: string) => {
+    setChains(prev => prev.filter(chain => chain.id !== chainId));
+    if (selectedChain?.id === chainId) {
+      setSelectedChain(null);
+    }
+  };
+
+  const handleSaveSchedule = (newSchedule: Omit<Schedule, 'id'>) => {
+    const schedule: Schedule = {
+      ...newSchedule,
+      id: Date.now().toString()
+    };
+    setSchedules(prev => [...prev, schedule]);
+  };
+
+  const handleDeleteSchedule = (scheduleId: string) => {
+    setSchedules(prev => prev.filter(s => s.id !== scheduleId));
+  };
+
+  const handleToggleSchedule = (scheduleId: string, enabled: boolean) => {
+    setSchedules(prev => prev.map(s => 
+      s.id === scheduleId ? { ...s, isEnabled: enabled } : s
+    ));
   };
 
   const handleCustomSettingChange = (
@@ -96,11 +151,6 @@ export default function App() {
   const handlePresetSelect = (preset: TimerPreset) => {
     setSelectedPreset(preset);
     setSelectedChain(null);
-    setIsCustom(false);
-  };
-
-  const handleChainSelect = (chain: PresetChain) => {
-    setSelectedChain(chain);
     setIsCustom(false);
   };
 
@@ -135,11 +185,17 @@ export default function App() {
         onCancelPresetForm={() => setShowPresetForm(false)}
         colors={colors}
         onColorChange={setColors}
-        initialPresetValues={isCustom ? customSettings : undefined}
+        schedules={schedules}
+        chains={chains}
+        onSaveSchedule={handleSaveSchedule}
+        onDeleteSchedule={handleDeleteSchedule}
+        onToggleSchedule={handleToggleSchedule}
+        notificationSettings={notificationSettings}
+        onUpdateNotificationSettings={updateNotificationSettings}
       />
 
       <main className="pt-16 min-h-screen">
-        <div className="max-w-7xl mx-auto px-4 flex">
+        <div className="max-w-7xl mx-auto px-4 flex gap-8">
           <div className={`flex-1 flex items-center justify-center ${showChainPanel ? 'w-1/2' : 'w-full'}`}>
             {isComplete ? (
               <div className="text-center">
@@ -172,7 +228,7 @@ export default function App() {
           </div>
 
           {showChainPanel && (
-            <div className="w-1/2 p-8 border-l border-gray-800">
+            <div className="w-1/2 p-6 bg-gray-800/30 rounded-lg">
               {showChainForm ? (
                 <PresetChainForm
                   presets={presets}
@@ -182,14 +238,13 @@ export default function App() {
               ) : (
                 <PresetChainList
                   chains={chains}
-                  onSelectChain={handleChainSelect}
+                  onSelectChain={setSelectedChain}
                   onCreateChain={() => setShowChainForm(true)}
                   onEditChain={(chain) => {
-                    // Implement edit functionality
+                    setSelectedChain(chain);
+                    setShowChainForm(true);
                   }}
-                  onDeleteChain={(chainId) => {
-                    setChains(prev => prev.filter(chain => chain.id !== chainId));
-                  }}
+                  onDeleteChain={handleDeleteChain}
                 />
               )}
             </div>

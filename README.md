@@ -2,70 +2,82 @@
 
 A modern, feature-rich Pomodoro timer application built with React and TypeScript.
 
+![Pomomer Screenshot](https://source.unsplash.com/random/1200x630/?productivity)
+
 ## Features
 
-- 🎯 Classic Pomodoro technique implementation
-- ⏱️ Customizable work and break durations
-- 🔄 Preset chains for different work patterns
-- 📅 Scheduling system for automated timer starts
-- 🌓 Light/Dark mode support
-- 💾 Persistent storage using SQLite
-- 🔔 Break notifications and reminders
-- 📊 Session progress tracking
-- ⚡ Custom break scheduling
-- 🎨 Modern, responsive UI with Tailwind CSS
+- 🎯 Customizable work and break intervals
+- 🎨 Personalized themes with color picker
+- ⏰ Preset timer configurations
+- 📅 Scheduled timer sessions
+- 🔄 Recurring schedules (daily, weekly, monthly)
+- 🌓 Dark/Light mode toggle
+- ⚡ Manual session control
+- 🎯 Progress tracking
+- 📱 Responsive design
 
 ## Getting Started
 
-1. Clone the repository
+### Prerequisites
+
+- Node.js 18.0.0 or higher
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/HawkdotDev/pomomer.git
+   cd pomomer
+   ```
+
 2. Install dependencies:
    ```bash
    npm install
    ```
+
 3. Start the development server:
    ```bash
    npm run dev
    ```
 
+4. Open [http://localhost:5173](http://localhost:5173) in your browser.
+
 ## Usage
 
 ### Timer Controls
-- Start/Pause timer
-- Reset current session
-- Auto-continue option for seamless transitions
 
-### Preset Management
-- Create custom presets
-- Chain multiple presets
-- Save and load preset chains
+- Click the play/pause button to start/stop the timer
+- Use the reset button to restart the current session
+- Toggle manual start mode for breaks and work sessions
 
-### Break Scheduling
-- Schedule breaks by time
-- Schedule breaks by session count
-- Recurring and one-time schedules
+### Customization
 
-### Theme
-- Toggle between light and dark mode
-- Persistent theme preference
+1. Click the settings icon to open the sidebar
+2. Choose from preset configurations or create your own
+3. Customize colors using the color picker
+4. Set up scheduled sessions with recurrence patterns
 
-## Tech Stack
+### Scheduling
 
-- React
-- TypeScript
-- Tailwind CSS
-- Vite
-- SQLite (better-sqlite3)
-- Lucide Icons
+1. Navigate to the Schedules tab in settings
+2. Create new schedules with specific times and recurrence patterns
+3. Enable/disable schedules as needed
+4. Edit or delete existing schedules
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## Developer
-
-- **Name**: Dwaipayan Dutta
-- **GitHub**: [HawkdotDev](https://github.com/HawkdotDev)
+Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Author
+
+**Dwaipayan Dutta** ([@HawkdotDev](https://github.com/HawkdotDev))
+
+## Acknowledgments
+
+- Inspired by the Pomodoro Technique® by Francesco Cirillo
+- Built with React, TypeScript, and Tailwind CSS

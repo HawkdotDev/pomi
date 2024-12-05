@@ -31,6 +31,15 @@ export interface ThemeColors {
   text: string;
 }
 
+export interface NotificationSettings {
+  enabled: boolean;
+  sound: boolean;
+  volume: number;
+  workComplete: boolean;
+  breakComplete: boolean;
+  sessionComplete: boolean;
+}
+
 export const RecurrenceType = {
   NONE: 'none',
   DAILY: 'daily',
@@ -99,6 +108,15 @@ export const defaultPresets: TimerPreset[] = [
     requireManualStart: false
   }
 ];
+
+export const defaultNotificationSettings: NotificationSettings = {
+  enabled: false,
+  sound: true,
+  volume: 0.7,
+  workComplete: true,
+  breakComplete: true,
+  sessionComplete: true
+};
 
 export const lightTheme: ThemeColors = {
   background: '#f3f4f6',
